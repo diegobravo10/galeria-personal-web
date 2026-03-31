@@ -47,9 +47,9 @@ async function loadPhotos() {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
                 
-                // Allow delete (only renders X button statically, secure because backend also checks auth)
+                const isAdmin = window.location.pathname === '/eliminaryo';
                 item.innerHTML = `
-                    <button class="delete-btn" onclick="deletePhoto(${foto.id}, event)">X</button>
+                    ${isAdmin ? `<button class="delete-btn" onclick="deletePhoto(${foto.id}, event)">X</button>` : ''}
                     <img src="${foto.ruta}" alt="${foto.nombre}" class="gallery-img" onclick="openModal('${foto.ruta}')">
                     <div class="img-overlay">
                         ${foto.descripcion ? `<p class="img-desc">${foto.descripcion}</p>` : ''}

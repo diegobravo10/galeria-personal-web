@@ -17,4 +17,8 @@ router.get('/subiryo', requireAuth, (req, res) => {
     res.sendFile(path.join(__dirname, '../public/subiryo.html'));
 });
 
+router.get('/eliminaryo', requireAuth, (req, res) => {
+    res.sendFile(path.join(__dirname, '../public/eliminaryo.html'));
+});
+
 module.exports = router;

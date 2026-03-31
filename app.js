@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 // Protección de archivos HTML directos y servir carpeta public
 app.use((req, res, next) => {
     // Si intentan acceder directamente a .html y no es login.html
-    const protectedStaticFiles = ['/subir.html', '/subiryo.html'];
+    const protectedStaticFiles = ['/subir.html', '/subiryo.html', '/eliminaryo.html'];
     if (protectedStaticFiles.includes(req.path)) {
         if (!req.session.authenticated) {
             return res.redirect('/');
