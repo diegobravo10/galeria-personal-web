@@ -4,8 +4,8 @@ const upload = require('../middleware/uploadMiddleware');
 const { uploadPhoto, getPhotos, deletePhoto } = require('../controllers/photoController');
 const { requireAuth } = require('../middleware/authMiddleware');
 
-// Obtener todas las fotos (protegido)
-router.get('/fotos', requireAuth, getPhotos);
+// Obtener todas las fotos (público)
+router.get('/fotos', getPhotos);
 
 // Subir una foto (protegido) con validación de multer
 router.post('/upload', requireAuth, (req, res, next) => {

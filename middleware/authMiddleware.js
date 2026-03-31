@@ -6,8 +6,8 @@ const requireAuth = (req, res, next) => {
         if (req.headers.accept && req.headers.accept.includes('application/json')) {
             return res.status(401).json({ error: 'No autorizado' });
         }
-        // Si es una navegación normal
-        res.redirect('/');
+        // Si es una navegación normal, ir al login
+        res.redirect('/login.html');
     }
 };
 
