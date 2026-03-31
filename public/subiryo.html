@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir Foto</title>
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h2>Panel Seguro</h2>
+        <div class="nav-links">
+            <a href="/galeria" class="nav-link">Volver a Galería</a>
+            <a href="/logout" class="nav-link">Cerrar Sesión</a>
+        </div>
+    </nav>
+    <div class="container">
+        <div class="upload-wrapper">
+            <h1 class="text-center">Añadir Recuerdo</h1>
+            <form id="uploadForm">
+                <div class="drop-zone" id="dropZone">
+                    <p>Arrastra tu imagen aquí o haz click para seleccionar</p>
+                    <input type="file" id="fileInput" name="imagen" class="hidden-input" accept="image/*" required>
+                    <img id="imagePreview" class="preview-img">
+                </div>
+                <div class="input-block">
+                    <label for="descInput">Descripción (opcional)</label>
+                    <input type="text" id="descInput" name="descripcion" placeholder="Escribe algo sobre la foto...">
+                </div>
+                <div id="uploadError" class="error-msg"></div>
+                <button type="submit" class="btn" style="width: 100%;" id="uploadBtn">Subir Foto</button>
+            </form>
+        </div>
+    </div>
+    <script src="/js/main.js"></script>
+    <script>
+        // Init upload logic
+        document.addEventListener('DOMContentLoaded', initUploadForm);
+    </script>
+</body>
+</html>

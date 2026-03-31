@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app:
+    build: .
+    container_name: app-perfil-web
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_USER=mi_usuario
+      - DB_HOST=db
+      - DB_NAME=galeria_db
+      - DB_PASSWORD=mi_password
+      - DB_PORT=5432
+      - SESSION_SECRET=secreto_super_seguro
+    depends_on:
+      - db
+    volumes:
+      - ./uploads:/usr/src/app/uploads
+
+  db:
+    image: postgres:15-alpine
+    container_name: app-perfil-db
+    restart: always
+    environment:
+      - POSTGRES_USER=mi_usuario
+      - POSTGRES_PASSWORD=mi_password
+      - POSTGRES_DB=galeria_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts:/docker-entrypoint-initdb.d # Opcional: Para ejecutar scripts iniciales SQL
+
+volumes:
+  postgres_data:
