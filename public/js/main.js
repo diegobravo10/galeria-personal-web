@@ -47,9 +47,9 @@ async function loadPhotos() {
                 const item = document.createElement('div');
                 item.className = 'gallery-item';
                 
-                const isAdmin = window.location.pathname === '/eliminaryo';
+                const isAdmin = window.location.pathname.includes('/eliminaryo');
                 item.innerHTML = `
-                    ${isAdmin ? `<button class="delete-btn" onclick="deletePhoto(${foto.id}, event)">X</button>` : ''}
+                    ${isAdmin ? `<button class="delete-btn" style="opacity: 1;" onclick="deletePhoto(${foto.id}, event)">X</button>` : ''}
                     <img src="${foto.ruta}" alt="${foto.nombre}" class="gallery-img" onclick="openModal('${foto.ruta}')">
                     <div class="img-overlay">
                         ${foto.descripcion ? `<p class="img-desc">${foto.descripcion}</p>` : ''}
