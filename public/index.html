@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="description" content="Galería social minimalista con acertijos para desbloquear contenido. Comparte fotos y protege tu galería.">
+    <title>Galería Social</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+
+    <!-- ═══════════════════════ APP CONTAINER ═══════════════════════ -->
+    <div id="app">
+
+        <!-- ── LOGIN VIEW ── -->
+        <div id="view-login" class="view" style="display:none;">
+            <div class="auth-container">
+                <div class="auth-brand">
+                    <div class="brand-icon">◈</div>
+                    <h1 class="brand-title">Galería</h1>
+                    <p class="brand-subtitle">Comparte tu mundo visual</p>
+                </div>
+                <form id="loginForm" class="auth-form" autocomplete="off">
+                    <div class="form-group">
+                        <input type="text" id="login-username" class="form-input" placeholder="Usuario" required autocomplete="username">
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="login-password" class="form-input" placeholder="Contraseña" required autocomplete="current-password">
+                    </div>
+                    <div id="login-error" class="form-error"></div>
+                    <button type="submit" class="btn btn-primary btn-full" id="login-btn">Iniciar Sesión</button>
+                </form>
+                <p class="auth-switch">¿No tienes cuenta? <a href="#register" class="auth-link">Regístrate</a></p>
+            </div>
+        </div>
+
+        <!-- ── REGISTER VIEW ── -->
+        <div id="view-register" class="view" style="display:none;">
+            <div class="auth-container">
+                <div class="auth-brand">
+                    <div class="brand-icon">◈</div>
+                    <h1 class="brand-title">Crear Cuenta</h1>
+                    <p class="brand-subtitle">Únete a la comunidad</p>
+                </div>
+                <form id="registerForm" class="auth-form" autocomplete="off">
+                    <div class="form-group">
+                        <input type="text" id="register-username" class="form-input" placeholder="Nombre de usuario" required minlength="3" maxlength="30" autocomplete="username">
+                        <span class="form-hint">3-30 caracteres, letras, números, guiones</span>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="register-password" class="form-input" placeholder="Contraseña" required minlength="6" autocomplete="new-password">
+                        <span class="form-hint">Mínimo 6 caracteres</span>
+                    </div>
+                    <div class="form-group">
+                        <input type="password" id="register-password2" class="form-input" placeholder="Confirmar contraseña" required autocomplete="new-password">
+                    </div>
+                    <div id="register-error" class="form-error"></div>
+                    <button type="submit" class="btn btn-primary btn-full" id="register-btn">Crear Cuenta</button>
+                </form>
+                <p class="auth-switch">¿Ya tienes cuenta? <a href="#login" class="auth-link">Inicia sesión</a></p>
+            </div>
+        </div>
+
+        <!-- ── DASHBOARD VIEW ── -->
+        <div id="view-dashboard" class="view" style="display:none;">
+            <header class="app-header">
+                <div class="header-left">
+                    <h2 class="header-title" id="dashboard-username">Mi Galería</h2>
+                </div>
+                <div class="header-right">
+                    <a href="#explore" class="header-icon" title="Explorar" id="btn-explore">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
+                    </a>
+                    <a href="#settings" class="header-icon" title="Configuración" id="btn-settings">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
+                    </a>
+                </div>
+            </header>
+
+            <!-- Dashboard Profile Summary -->
+            <div class="profile-summary" id="dashboard-profile">
+                <div class="profile-avatar-wrapper">
+                    <div class="profile-avatar" id="dashboard-avatar">
+                        <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                </div>
+                <div class="profile-stats">
+                    <div class="stat">
+                        <span class="stat-number" id="dashboard-photo-count">0</span>
+                        <span class="stat-label">fotos</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-status" id="dashboard-riddle-status">—</span>
+                        <span class="stat-label">acertijo</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Selection mode toolbar -->
+            <div class="selection-toolbar" id="selection-toolbar" style="display:none;">
+                <span id="selection-count">0 seleccionadas</span>
+                <div class="selection-actions">
+                    <button class="btn btn-danger btn-sm" id="btn-delete-selected">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                        Eliminar
+                    </button>
+                    <button class="btn btn-ghost btn-sm" id="btn-cancel-selection">Cancelar</button>
+                </div>
+            </div>
+
+            <!-- Gallery Grid -->
+            <div class="gallery-container">
+                <div class="gallery-grid" id="dashboard-gallery">
+                    <!-- Photos loaded dynamically -->
+                </div>
+            </div>
+
+            <!-- Bottom Navigation -->
+            <nav class="bottom-nav" id="bottom-nav">
+                <button class="nav-btn" id="btn-menu" title="Menú">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 12h18M3 6h18M3 18h18"></path></svg>
+                    <span>Menú</span>
+                </button>
+                <button class="nav-btn" id="btn-camera" title="Cámara">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+                    <span>Cámara</span>
+                </button>
+                <button class="nav-btn" id="btn-logout" title="Cerrar Sesión">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <span>Salir</span>
+                </button>
+            </nav>
+
+            <!-- Menu Overlay -->
+            <div class="menu-overlay" id="menu-overlay" style="display:none;">
+                <div class="menu-panel" id="menu-panel">
+                    <div class="menu-header">
+                        <span>Opciones</span>
+                        <button class="menu-close" id="menu-close">✕</button>
+                    </div>
+                    <button class="menu-item" id="menu-add-image">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                        Agregar imagen
+                    </button>
+                    <button class="menu-item" id="menu-select-mode">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"></polyline><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"></path></svg>
+                        Seleccionar imágenes
+                    </button>
+                    <button class="menu-item" id="menu-riddle-config">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                        Configurar acertijo
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── UPLOAD VIEW ── -->
+        <div id="view-upload" class="view" style="display:none;">
+            <header class="app-header">
+                <button class="header-back" id="upload-back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                </button>
+                <h2 class="header-title">Nueva Foto</h2>
+                <div class="header-right"></div>
+            </header>
+            <div class="upload-container">
+                <form id="uploadForm" class="upload-form">
+                    <div class="drop-zone" id="dropZone">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        <p>Toca para seleccionar una imagen</p>
+                        <span class="drop-hint">o arrastra y suelta aquí</span>
+                        <input type="file" id="fileInput" name="imagen" accept="image/*" required class="hidden-input">
+                    </div>
+                    <img id="imagePreview" class="upload-preview" style="display:none;">
+                    <div class="form-group">
+                        <input type="text" id="descInput" class="form-input" placeholder="Descripción (opcional)">
+                    </div>
+                    <div id="upload-error" class="form-error"></div>
+                    <button type="submit" class="btn btn-primary btn-full" id="uploadBtn">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="17 8 12 3 7 8"></polyline><line x1="12" y1="3" x2="12" y2="15"></line></svg>
+                        Subir Foto
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ── CAMERA VIEW ── -->
+        <div id="view-camera" class="view" style="display:none;">
+            <header class="app-header">
+                <button class="header-back" id="camera-back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                </button>
+                <h2 class="header-title">Captura</h2>
+                <div class="header-right"></div>
+            </header>
+            <div class="camera-container">
+                <video id="cameraStream" autoplay playsinline class="camera-video"></video>
+                <canvas id="cameraCanvas" style="display:none;"></canvas>
+                <img id="cameraPreview" class="camera-preview" style="display:none;">
+                <div class="camera-controls">
+                    <button class="camera-btn camera-btn-secondary" id="camera-flip" title="Cambiar cámara">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+                    </button>
+                    <button class="camera-btn camera-btn-capture" id="camera-capture" title="Capturar">
+                        <div class="capture-ring"></div>
+                    </button>
+                    <button class="camera-btn camera-btn-secondary" id="camera-retake" title="Repetir" style="display:none;">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"></polyline><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"></path></svg>
+                    </button>
+                </div>
+                <div class="camera-save-bar" id="camera-save-bar" style="display:none;">
+                    <div class="form-group" style="flex:1;">
+                        <input type="text" id="camera-desc" class="form-input" placeholder="Descripción (opcional)">
+                    </div>
+                    <button class="btn btn-primary" id="camera-save">Guardar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── PROFILE VIEW (Public) ── -->
+        <div id="view-profile" class="view" style="display:none;">
+            <header class="app-header">
+                <button class="header-back" id="profile-back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                </button>
+                <h2 class="header-title" id="profile-header-name">Perfil</h2>
+                <div class="header-right"></div>
+            </header>
+
+            <div class="profile-public">
+                <div class="profile-avatar-wrapper profile-avatar-lg">
+                    <div class="profile-avatar" id="profile-avatar">
+                        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    </div>
+                </div>
+                <h2 class="profile-name" id="profile-username">username</h2>
+                <p class="profile-meta" id="profile-meta">0 fotos</p>
+            </div>
+
+            <!-- Riddle Challenge -->
+            <div class="riddle-challenge" id="riddle-challenge" style="display:none;">
+                <div class="riddle-card">
+                    <div class="riddle-icon">🧠</div>
+                    <h3 class="riddle-title">Galería Protegida</h3>
+                    <p class="riddle-question" id="riddle-question">Pregunta...</p>
+                    <form id="riddleForm" class="riddle-form">
+                        <input type="text" id="riddle-answer" class="form-input" placeholder="Tu respuesta..." required autocomplete="off">
+                        <div id="riddle-error" class="form-error"></div>
+                        <button type="submit" class="btn btn-primary btn-full">Desbloquear</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Profile Gallery -->
+            <div class="gallery-container" id="profile-gallery-container">
+                <div class="gallery-grid" id="profile-gallery">
+                    <!-- Photos loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ── SETTINGS VIEW ── -->
+        <div id="view-settings" class="view" style="display:none;">
+            <header class="app-header">
+                <button class="header-back" id="settings-back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                </button>
+                <h2 class="header-title">Configuración</h2>
+                <div class="header-right"></div>
+            </header>
+            <div class="settings-container">
+                <!-- Avatar Section -->
+                <div class="settings-section">
+                    <h3 class="settings-heading">Foto de Perfil</h3>
+                    <div class="settings-avatar-row">
+                        <div class="profile-avatar-wrapper">
+                            <div class="profile-avatar" id="settings-avatar">
+                                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                            </div>
+                        </div>
+                        <button class="btn btn-ghost" id="btn-change-avatar">Cambiar foto</button>
+                        <input type="file" id="avatarInput" accept="image/*" class="hidden-input">
+                    </div>
+                </div>
+
+                <!-- Riddle Section -->
+                <div class="settings-section">
+                    <h3 class="settings-heading">Acertijo de Galería</h3>
+                    <p class="settings-desc">Protege tu galería con un acertijo. Los visitantes deberán resolverlo para ver tus fotos.</p>
+                    <form id="riddleConfigForm" class="settings-form">
+                        <div class="toggle-row">
+                            <label for="riddle-toggle" class="toggle-label">Activar acertijo</label>
+                            <label class="toggle">
+                                <input type="checkbox" id="riddle-toggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                        <div id="riddle-fields" style="display:none;">
+                            <div class="form-group">
+                                <label class="form-label">Pregunta</label>
+                                <input type="text" id="riddle-pregunta" class="form-input" placeholder="Ej: ¿Cuál es mi color favorito?">
+                            </div>
+                            <div class="form-group">
+                                <label class="form-label">Respuesta</label>
+                                <input type="text" id="riddle-respuesta" class="form-input" placeholder="Ej: azul">
+                                <span class="form-hint">No distingue mayúsculas/minúsculas</span>
+                            </div>
+                        </div>
+                        <div id="riddle-config-error" class="form-error"></div>
+                        <button type="submit" class="btn btn-primary btn-full">Guardar Acertijo</button>
+                    </form>
+                </div>
+
+                <!-- My public profile link -->
+                <div class="settings-section">
+                    <h3 class="settings-heading">Tu Perfil Público</h3>
+                    <p class="settings-desc">Comparte este enlace para que otros vean tu galería:</p>
+                    <div class="copy-link-row">
+                        <input type="text" id="public-link" class="form-input" readonly>
+                        <button class="btn btn-ghost" id="btn-copy-link">Copiar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ── EXPLORE VIEW ── -->
+        <div id="view-explore" class="view" style="display:none;">
+            <header class="app-header">
+                <button class="header-back" id="explore-back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                </button>
+                <h2 class="header-title">Explorar</h2>
+                <div class="header-right"></div>
+            </header>
+            <div class="explore-container">
+                <div class="user-list" id="user-list">
+                    <!-- Users loaded dynamically -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ═══════════ LIGHTBOX MODAL ═══════════ -->
+        <div class="lightbox" id="lightbox" style="display:none;">
+            <button class="lightbox-close" id="lightbox-close">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+            <img id="lightbox-img" class="lightbox-img">
+            <div class="lightbox-info" id="lightbox-info">
+                <p class="lightbox-desc" id="lightbox-desc"></p>
+                <p class="lightbox-date" id="lightbox-date"></p>
+            </div>
+        </div>
+
+        <!-- ═══════════ TOAST ═══════════ -->
+        <div class="toast-container" id="toast-container"></div>
+
+    </div>
+
+    <script src="/js/main.js"></script>
+</body>
+</html>

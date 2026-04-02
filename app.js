@@ -1,52 +1,40 @@
 require('dotenv').config();
 const express = require('express');
-const session = require('express-session');
+const cookieParser = require('cookie-parser');
 const path = require('path');
+const fs = require('fs');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// Configuración de Sesiones
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'secreto_super_seguro',
-  resave: false,
-  saveUninitialized: false,
-  cookie: { 
-    secure: false, // true solo en producción con HTTPS
-    httpOnly: true,
-    maxAge: 1000 * 60 * 60 * 24 // 1 día
-  }
-}));
+// Crear directorios necesarios
+const uploadsDir = path.join(__dirname, 'uploads');
+const avatarsDir = path.join(__dirname, 'uploads', 'avatars');
+if (!fs.existsSync(uploadsDir)) fs.mkdirSync(uploadsDir, { recursive: true });
+if (!fs.existsSync(avatarsDir)) fs.mkdirSync(avatarsDir, { recursive: true });
 
+// Middlewares
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Protección de archivos HTML directos y servir carpeta public
-app.use((req, res, next) => {
-    // Si intentan acceder directamente a .html y no es login.html
-    const protectedStaticFiles = ['/subir.html', '/subiryo.html', '/eliminaryo.html'];
-    if (protectedStaticFiles.includes(req.path)) {
-        if (!req.session.authenticated) {
-            return res.redirect('/');
-        }
-    }
-    next();
-});
+app.use(cookieParser());
 
 // Servir archivos estáticos
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Importar rutas
-const authRoutes = require('./routes/authRoutes');
+// Importar rutas de API
+const userRoutes = require('./routes/userRoutes');
 const photoRoutes = require('./routes/photoRoutes');
-const pageRoutes = require('./routes/pageRoutes');
 
 // Rutas de API
-app.use('/', authRoutes);
+app.use('/', userRoutes);
 app.use('/', photoRoutes);
-app.use('/', pageRoutes);
+
+// SPA catch-all: cualquier ruta que no sea API ni archivo estático → index.html
+app.get('{*path}', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.listen(PORT, () => {
-    console.log(`Servidor corriendo en http://localhost:${PORT}`);
+    console.log(`🚀 Servidor corriendo en http://localhost:${PORT}`);
 });

@@ -1,16 +1,23 @@
 const express = require('express');
 const router = express.Router();
-const upload = require('../middleware/uploadMiddleware');
-const { uploadPhoto, getPhotos, deletePhoto } = require('../controllers/photoController');
-const { requireAuth } = require('../middleware/authMiddleware');
+const { uploadGallery } = require('../middleware/uploadMiddleware');
+const { requireAuth, optionalAuth } = require('../middleware/authMiddleware');
+const {
+    uploadPhoto,
+    getMyPhotos,
+    getUserPhotos,
+    deletePhoto,
+    deleteMultiplePhotos,
+    updatePhotoDescription
+} = require('../controllers/photoController');
 
-// Obtener todas las fotos (público)
-router.get('/fotos', getPhotos);
+// Mis fotos (protegido)
+router.get('/api/photos/me', requireAuth, getMyPhotos);
 
-// Subir una foto (protegido) con validación de multer
-router.post('/upload', requireAuth, (req, res, next) => {
-    const uploadSingle = upload.single('imagen');
-    uploadSingle(req, res, (err) => {
+// Subir foto (protegido)
+router.post('/api/photos/upload', requireAuth, (req, res, next) => {
+    const upload = uploadGallery.single('imagen');
+    upload(req, res, (err) => {
         if (err) {
             return res.status(400).json({ error: err.message });
         }
@@ -18,7 +25,16 @@ router.post('/upload', requireAuth, (req, res, next) => {
     });
 }, uploadPhoto);
 
-// Eliminar foto (protegido)
-router.delete('/foto/:id', requireAuth, deletePhoto);
+// Eliminar foto propia
+router.delete('/api/photos/:id', requireAuth, deletePhoto);
+
+// Eliminar múltiples fotos
+router.post('/api/photos/delete-batch', requireAuth, deleteMultiplePhotos);
+
+// Editar descripción
+router.put('/api/photos/:id', requireAuth, updatePhotoDescription);
+
+// Fotos de un usuario (público, con check de acertijo)
+router.get('/api/photos/user/:username', optionalAuth, getUserPhotos);
 
 module.exports = router;

@@ -3,6 +3,9 @@ FROM node:20-alpine
 # Crear el directorio de la aplicación
 WORKDIR /usr/src/app
 
+# Crear directorios para uploads
+RUN mkdir -p uploads/avatars
+
 # Copiar archivos de dependencias
 COPY package*.json ./
 

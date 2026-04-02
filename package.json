@@ -1,18 +1,22 @@
 {
-  "name": "app-perfil",
-  "version": "1.0.0",
-  "main": "index.js",
+  "name": "galeria-social",
+  "version": "2.0.0",
+  "main": "app.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node app.js",
+    "dev": "node app.js",
+    "init-db": "node scripts/initDb.js"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "Galería social minimalista con acertijos para desbloquear contenido",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "cookie-parser": "^1.4.6",
     "dotenv": "^17.3.1",
     "express": "^5.2.1",
-    "express-session": "^1.19.0",
+    "jsonwebtoken": "^9.0.0",
     "multer": "^2.1.1",
     "pg": "^8.20.0",
     "uuid": "^13.0.0"

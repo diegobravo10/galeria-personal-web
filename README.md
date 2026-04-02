@@ -1,105 +1,215 @@
-# Galería Personal estilo VSCO
+# 🖼️ Galería Social — Acertijos para Desbloquear
 
-Una aplicación web minimalista, rápida y segura diseñada para funcionar como tu galería personal privada en un servidor Ubuntu.
+Una plataforma social minimalista donde cada usuario tiene su propia galería de imágenes, protegida opcionalmente por un acertijo que otros deben resolver para ver sus fotos.
 
-## Requisitos Previos (Ubuntu Server)
+## ✨ Características
 
-Antes de empezar, asegúrate de tener tu servidor Ubuntu actualizado:
+- **Autenticación de usuarios** — Registro e inicio de sesión con JWT
+- **Galería personal** — Cada usuario tiene su propia galería de imágenes
+- **Sistema de acertijos** — Protege tu galería con un acertijo personalizado
+- **Captura de cámara** — Toma fotos directamente desde la aplicación
+- **Perfiles públicos** — Visita las galerías de otros usuarios
+- **Eliminación múltiple** — Selecciona y elimina varias fotos a la vez
+- **Diseño VSCO** — Interfaz minimalista, oscura y elegante
+- **Responsive** — Funciona en móviles y escritorio
+
+## 🛠️ Stack Tecnológico
+
+| Componente | Tecnología |
+|---|---|
+| Backend | Node.js + Express |
+| Base de datos | PostgreSQL |
+| Autenticación | JWT (jsonwebtoken + bcryptjs) |
+| Subida de archivos | Multer |
+| Frontend | HTML + CSS + JavaScript (SPA) |
+| Deploy | Docker + Docker Compose |
+
+---
+
+## 🚀 Inicio Rápido con Docker
+
+### Requisitos
+- Docker y Docker Compose instalados
+
+### Pasos
+
+1. Clona el repositorio:
 ```bash
-sudo apt update && sudo apt upgrade -y
+git clone <tu-repositorio>
+cd app-perfil
 ```
 
-### 1. Instalar Dependencias del Sistema
-Instalaremos Node.js, PostgreSQL y Nginx.
+2. Levanta los contenedores:
 ```bash
-# Node.js (usando NodeSource para v18.x)
-curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
-sudo apt install -y nodejs
+docker-compose up -d --build
+```
 
-# PostgreSQL
-sudo apt install -y postgresql postgresql-contrib
+3. Inicializa la base de datos (solo la primera vez):
+```bash
+docker exec -it galeria-social-web node scripts/initDb.js
+```
 
-# Nginx
-sudo apt install -y nginx
+4. Abre tu navegador en `http://localhost:3000`
 
-# PM2 (Gestor de procesos de Node.js)
-sudo npm install -g pm2
+### Detener
+```bash
+docker-compose down
 ```
 
 ---
 
-### 2. Configurar PostgreSQL
-Crea el usuario y la base de datos para la aplicación:
+## 💻 Ejecución Local (sin Docker)
+
+### Requisitos
+- Node.js 18+
+- PostgreSQL 15+
+
+### 1. Configurar PostgreSQL
 ```bash
 sudo -u postgres psql
 ```
-
-Dentro de psql, ejecuta:
 ```sql
 CREATE DATABASE galeria_db;
-CREATE USER mi_usuario WITH ENCRYPTED PASSWORD 'mi_password';
-GRANT ALL PRIVILEGES ON DATABASE galeria_db TO mi_usuario;
+CREATE USER galeria_user WITH ENCRYPTED PASSWORD 'tu_password';
+GRANT ALL PRIVILEGES ON DATABASE galeria_db TO galeria_user;
 \c galeria_db
-ALTER SCHEMA public OWNER TO mi_usuario;
+ALTER SCHEMA public OWNER TO galeria_user;
 \q
 ```
 
----
-
-### 3. Configurar la Aplicación
-Clona o sube los archivos de este proyecto a tu servidor, por ejemplo en `/var/www/app-perfil`.
-
+### 2. Configurar variables de entorno
 ```bash
-# Ir al directorio del proyecto
-cd /var/www/app-perfil
+cp .env.example .env
+# Edita .env con tus credenciales
+```
 
-# Instalar dependencias de Node
+### 3. Instalar dependencias
+```bash
 npm install
 ```
 
-**Configurar Variables de Entorno**
-Crea el archivo `.env` basado en `.env.example`:
+### 4. Inicializar base de datos
 ```bash
+npm run init-db
+```
+
+### 5. Iniciar la aplicación
+```bash
+npm start
+```
+
+Visita `http://localhost:3000`
+
+---
+
+## 📦 API Endpoints
+
+### Autenticación
+| Método | Ruta | Descripción |
+|---|---|---|
+| POST | `/api/auth/register` | Registro de usuario |
+| POST | `/api/auth/login` | Inicio de sesión |
+
+### Usuarios
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/api/users/me` | Perfil propio (auth) |
+| PUT | `/api/users/me/avatar` | Cambiar foto de perfil (auth) |
+| PUT | `/api/users/me/riddle` | Configurar acertijo (auth) |
+| GET | `/api/users` | Listar usuarios |
+| GET | `/api/users/:username` | Perfil público |
+| POST | `/api/users/:username/riddle` | Verificar acertijo |
+
+### Fotos
+| Método | Ruta | Descripción |
+|---|---|---|
+| GET | `/api/photos/me` | Mis fotos (auth) |
+| POST | `/api/photos/upload` | Subir foto (auth) |
+| DELETE | `/api/photos/:id` | Eliminar foto (auth) |
+| POST | `/api/photos/delete-batch` | Eliminar múltiples (auth) |
+| PUT | `/api/photos/:id` | Editar descripción (auth) |
+| GET | `/api/photos/user/:username` | Fotos de un usuario |
+
+---
+
+## 🗄️ Modelo de Datos
+
+### Usuarios
+| Campo | Tipo | Descripción |
+|---|---|---|
+| id | SERIAL | Clave primaria |
+| username | VARCHAR(50) | Nombre único |
+| password | VARCHAR(255) | Hash bcrypt |
+| foto_perfil | TEXT | Ruta al avatar |
+| acertijo_activo | BOOLEAN | ¿Acertijo habilitado? |
+| pregunta | TEXT | Pregunta del acertijo |
+| respuesta | TEXT | Respuesta (lowercase) |
+| created_at | TIMESTAMP | Fecha de registro |
+
+### Fotos
+| Campo | Tipo | Descripción |
+|---|---|---|
+| id | SERIAL | Clave primaria |
+| user_id | INTEGER | FK → usuarios.id |
+| ruta | TEXT | Ruta del archivo |
+| descripcion | TEXT | Descripción opcional |
+| fecha | TIMESTAMP | Fecha de publicación |
+
+---
+
+## 🎨 Flujo de Uso
+
+1. **Regístrate** — Crea tu cuenta con usuario y contraseña
+2. **Sube fotos** — Desde el menú o directamente con la cámara
+3. **Configura tu acertijo** — Ve a Configuración y activa el acertijo
+4. **Comparte tu perfil** — Copia el enlace desde Configuración
+5. **Explora** — Visita los perfiles de otros usuarios y resuelve sus acertijos
+
+---
+
+## 🌐 Despliegue en Producción (Ubuntu)
+
+### 1. Instalar dependencias del sistema
+```bash
+curl -fsSL https://deb.nodesource.com/setup_18.x | sudo -E bash -
+sudo apt install -y nodejs postgresql postgresql-contrib nginx
+sudo npm install -g pm2
+```
+
+### 2. Configurar PostgreSQL
+```bash
+sudo -u postgres psql
+```
+```sql
+CREATE DATABASE galeria_db;
+CREATE USER galeria_user WITH ENCRYPTED PASSWORD 'password_segura';
+GRANT ALL PRIVILEGES ON DATABASE galeria_db TO galeria_user;
+\c galeria_db
+ALTER SCHEMA public OWNER TO galeria_user;
+\q
+```
+
+### 3. Configurar la aplicación
+```bash
+cd /var/www/galeria-social
+npm install
 cp .env.example .env
-nano .env
-```
-Asegúrate de cambiar las contraseñas, definir el secreto de la sesión y establecer tu acertijo (`RIDDLE_ANSWER`).
-
----
-
-### 4. Inicializar la Base de Datos
-Ejecuta el script para crear las tablas automáticamente:
-```bash
-node scripts/initDb.js
+nano .env  # Configurar credenciales y JWT_SECRET
+npm run init-db
 ```
 
----
-
-### 5. Ejecutar la app con PM2
-Inicia el servidor en segundo plano:
+### 4. Iniciar con PM2
 ```bash
-pm2 start app.js --name "galeria-vsco"
+pm2 start app.js --name "galeria-social"
 pm2 save
 pm2 startup
 ```
-*(Sigue las instrucciones que PM2 te muestre en pantalla después de `pm2 startup` para asegurar que inicie con el sistema).*
 
----
-
-### 6. Configurar Nginx como Reverse Proxy
-Crea un archivo de configuración para tu dominio en Nginx:
-
-```bash
-sudo nano /etc/nginx/sites-available/galeria
-```
-
-Pega el siguiente contenido (reemplaza `tu-dominio.com`):
+### 5. Configurar Nginx
 ```nginx
 server {
     listen 80;
-    server_name tu-dominio.com www.tu-dominio.com;
-
-    # Aumentar límite de subida para Nginx (5MB)
+    server_name tu-dominio.com;
     client_max_body_size 5M;
 
     location / {
@@ -114,45 +224,8 @@ server {
 }
 ```
 
-Habilita el sitio y reinicia Nginx:
-```bash
-sudo ln -s /etc/nginx/sites-available/galeria /etc/nginx/sites-enabled/
-sudo nginx -t
-sudo systemctl restart nginx
-```
-
-### 7. Configurar Dominio y SSL (Opcional pero recomendado)
-Apunta el registro A de tu dominio a la IP de tu servidor. Luego, instala los certificados de seguridad usando Certbot:
+### 6. SSL con Certbot
 ```bash
 sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d tu-dominio.com -d www.tu-dominio.com
-```
-
----
-
-## Uso de la Galería
-1. Entra a tu dominio (o `localhost:3000` si estás probando en local).
-2. Responde el acertijo correctamente (el valor de `RIDDLE_ANSWER` en tu `.env` o por defecto "vsco").
-3. Entra a `/subiryo` o utiliza el enlace en la navegación para añadir nuevas fotos.
-
----
-
-## Ejecutar Localmente con Docker
-
-Si deseas probar la aplicación rápidamente en tu entorno local sin instalar Node.js ni PostgreSQL, puedes usar Docker y Docker Compose:
-
-1. Asegúrate de tener **Docker** y **Docker Compose** instalados en tu sistema.
-2. Navega a la carpeta del proyecto y ejecuta el siguiente comando para levantar la base de datos y la aplicación:
-   ```bash
-   docker-compose up -d --build
-   ```
-3. Inicializa la base de datos (solo la primera vez) ejecutando el script dentro del contenedor de la aplicación:
-   ```bash
-   docker exec -it app-perfil-web node scripts/initDb.js
-   ```
-4. Abre tu navegador y visita `http://localhost:3000`.
-
-Para detener los contenedores, ejecuta:
-```bash
-docker-compose down
+sudo certbot --nginx -d tu-dominio.com
 ```
