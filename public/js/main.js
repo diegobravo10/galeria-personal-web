@@ -966,7 +966,7 @@ const Settings = {
             }
 
             // Public link
-            const link = `${window.location.origin}/#profile/${user.username}`;
+            const link = `${window.location.origin}/${user.username}`;
             document.getElementById('public-link').value = link;
 
         } catch (err) {
