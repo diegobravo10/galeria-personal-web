@@ -98,22 +98,60 @@ const Router = {
     currentView: null,
     currentRoute: null,
 
+    // Reserved internal route names that can't be usernames
+    reservedRoutes: ['login', 'register', 'dashboard', 'upload', 'camera', 'settings', 'explore', 'api', 'uploads'],
+
     init() {
-        window.addEventListener('hashchange', () => this.handleRoute());
+        window.addEventListener('popstate', () => this.handleRoute());
         this.handleRoute();
     },
 
     navigate(route) {
-        window.location.hash = route;
+        // Build the URL path
+        const path = this.routeToPath(route);
+        window.history.pushState({}, '', path);
+        this.handleRoute();
+    },
+
+    routeToPath(route) {
+        // profile/username → /username (clean URL)
+        if (route.startsWith('profile/')) {
+            const username = route.slice('profile/'.length);
+            return `/${username}`;
+        }
+        // Internal routes
+        if (route === '' || route === 'dashboard') {
+            return '/';
+        }
+        return `/${route}`;
+    },
+
+    pathToRoute() {
+        const path = window.location.pathname;
+        const segments = path.split('/').filter(Boolean);
+
+        // Root path
+        if (segments.length === 0) {
+            return { route: '', params: [] };
+        }
+
+        const first = segments[0];
+
+        // Check if it's a reserved/internal route
+        if (this.reservedRoutes.includes(first)) {
+            return { route: first, params: segments.slice(1) };
+        }
+
+        // Otherwise treat as a username profile
+        return { route: 'profile', params: [first] };
     },
 
     handleRoute() {
-        const hash = window.location.hash.slice(1) || '';
-        const [route, ...params] = hash.split('/');
+        const { route, params } = this.pathToRoute();
 
         // Auth guard
         const publicRoutes = ['login', 'register', 'profile'];
-        const isPublic = publicRoutes.includes(route);
+        const isPublic = publicRoutes.includes(route) || route === '';
 
         if (!isPublic && !Api.isLoggedIn()) {
             this.navigate('login');
@@ -165,10 +203,14 @@ const Router = {
                 Explore.load();
                 break;
             default:
+                // Root path
                 if (Api.isLoggedIn()) {
-                    this.navigate('dashboard');
+                    this.showView('view-dashboard');
+                    Dashboard.load();
+                    this.currentRoute = 'dashboard';
                 } else {
-                    this.navigate('login');
+                    this.showView('view-login');
+                    this.currentRoute = 'login';
                 }
         }
     },

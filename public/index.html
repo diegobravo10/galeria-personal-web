@@ -33,7 +33,7 @@
                     <div id="login-error" class="form-error"></div>
                     <button type="submit" class="btn btn-primary btn-full" id="login-btn">Iniciar Sesión</button>
                 </form>
-                <p class="auth-switch">¿No tienes cuenta? <a href="#register" class="auth-link">Regístrate</a></p>
+                <p class="auth-switch">¿No tienes cuenta? <a href="javascript:void(0)" onclick="Router.navigate('register')" class="auth-link">Regístrate</a></p>
             </div>
         </div>
 
@@ -60,7 +60,7 @@
                     <div id="register-error" class="form-error"></div>
                     <button type="submit" class="btn btn-primary btn-full" id="register-btn">Crear Cuenta</button>
                 </form>
-                <p class="auth-switch">¿Ya tienes cuenta? <a href="#login" class="auth-link">Inicia sesión</a></p>
+                <p class="auth-switch">¿Ya tienes cuenta? <a href="javascript:void(0)" onclick="Router.navigate('login')" class="auth-link">Inicia sesión</a></p>
             </div>
         </div>
 
@@ -71,10 +71,10 @@
                     <h2 class="header-title" id="dashboard-username">Mi Galería</h2>
                 </div>
                 <div class="header-right">
-                    <a href="#explore" class="header-icon" title="Explorar" id="btn-explore">
+                    <a href="javascript:void(0)" onclick="Router.navigate('explore')" class="header-icon" title="Explorar" id="btn-explore">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg>
                     </a>
-                    <a href="#settings" class="header-icon" title="Configuración" id="btn-settings">
+                    <a href="javascript:void(0)" onclick="Router.navigate('settings')" class="header-icon" title="Configuración" id="btn-settings">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"></path></svg>
                     </a>
                 </div>
@@ -99,7 +99,7 @@
                 </div>
             </div>
 
-            <!-- Selection mode toolbar -->
+            <!-- Selection mode toolbar (fixed at bottom on mobile) -->
             <div class="selection-toolbar" id="selection-toolbar" style="display:none;">
                 <span id="selection-count">0 seleccionadas</span>
                 <div class="selection-actions">
@@ -363,6 +363,17 @@
 
         <!-- ═══════════ TOAST ═══════════ -->
         <div class="toast-container" id="toast-container"></div>
+
+        <!-- ═══════════ CONFIRM MODAL ═══════════ -->
+        <div class="confirm-overlay" id="confirm-overlay" style="display:none;">
+            <div class="confirm-modal">
+                <p class="confirm-message" id="confirm-message">¿Estás seguro?</p>
+                <div class="confirm-actions">
+                    <button class="btn btn-ghost" id="confirm-cancel">Cancelar</button>
+                    <button class="btn btn-danger" id="confirm-ok">Eliminar</button>
+                </div>
+            </div>
+        </div>
 
     </div>
 
