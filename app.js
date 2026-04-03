@@ -1,4 +1,7 @@
-require('dotenv').config();
+// Solo cargar .env en desarrollo local (en Docker las vars vienen del compose)
+if (!process.env.DB_HOST) {
+  require('dotenv').config();
+}
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const path = require('path');

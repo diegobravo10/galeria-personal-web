@@ -1,5 +1,9 @@
 const { Pool } = require('pg');
-require('dotenv').config();
+
+// Solo cargar .env si no estamos en Docker (si las vars ya existen, no sobreescribir)
+if (!process.env.DB_HOST) {
+  require('dotenv').config();
+}
 
 const pool = new Pool({
   user: process.env.DB_USER,

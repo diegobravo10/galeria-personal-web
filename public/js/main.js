@@ -628,9 +628,9 @@ const Camera = {
         preview.style.display = 'none';
         video.style.display = 'block';
         saveBar.style.display = 'none';
-        retakeBtn.style.display = 'none';
+        retakeBtn.style.visibility = 'hidden';
         captureBtn.style.display = 'flex';
-        flipBtn.style.display = 'flex';
+        flipBtn.style.visibility = 'visible';
         descInput.value = '';
         this.capturedBlob = null;
 
@@ -652,7 +652,15 @@ const Camera = {
         document.getElementById('camera-capture').addEventListener('click', () => {
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            canvas.getContext('2d').drawImage(video, 0, 0);
+            const ctx = canvas.getContext('2d');
+
+            // Mirror the image if using front camera
+            if (this.facingMode === 'user') {
+                ctx.translate(canvas.width, 0);
+                ctx.scale(-1, 1);
+            }
+            ctx.drawImage(video, 0, 0);
+            ctx.setTransform(1, 0, 0, 1, 0, 0);
 
             canvas.toBlob((blob) => {
                 this.capturedBlob = blob;
@@ -660,9 +668,9 @@ const Camera = {
                 preview.style.display = 'block';
                 video.style.display = 'none';
                 document.getElementById('camera-save-bar').style.display = 'flex';
-                document.getElementById('camera-retake').style.display = 'flex';
+                document.getElementById('camera-retake').style.visibility = 'visible';
                 document.getElementById('camera-capture').style.display = 'none';
-                document.getElementById('camera-flip').style.display = 'none';
+                document.getElementById('camera-flip').style.visibility = 'hidden';
             }, 'image/jpeg', 0.9);
         });
 
@@ -675,9 +683,9 @@ const Camera = {
             preview.style.display = 'none';
             document.getElementById('cameraStream').style.display = 'block';
             document.getElementById('camera-save-bar').style.display = 'none';
-            document.getElementById('camera-retake').style.display = 'none';
+            document.getElementById('camera-retake').style.visibility = 'hidden';
             document.getElementById('camera-capture').style.display = 'flex';
-            document.getElementById('camera-flip').style.display = 'flex';
+            document.getElementById('camera-flip').style.visibility = 'visible';
             this.capturedBlob = null;
         });
 
@@ -702,7 +710,7 @@ const Camera = {
                     showToast('Error guardando la foto.', 'error');
                 }
             } catch (err) {
-                showToast('Error de conexión.', 'error');
+                showToast('Error de conexion.', 'error');
             } finally {
                 btn.disabled = false;
                 btn.textContent = 'Guardar';
@@ -714,12 +722,37 @@ const Camera = {
         this.stopCamera();
         try {
             this.stream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: this.facingMode, width: { ideal: 1920 }, height: { ideal: 1080 } }
+                video: {
+                    facingMode: this.facingMode,
+                    width: { ideal: 1920 },
+                    height: { ideal: 1080 }
+                }
             });
             video.srcObject = this.stream;
+
+            // Mirror front camera video display
+            if (this.facingMode === 'user') {
+                video.style.transform = 'scaleX(-1)';
+            } else {
+                video.style.transform = 'scaleX(1)';
+            }
         } catch (err) {
             console.error('Camera error:', err);
-            showToast('No se pudo acceder a la cámara. Verifica los permisos.', 'error');
+            // If the requested facing mode fails, try the other one
+            if (this.facingMode === 'environment') {
+                this.facingMode = 'user';
+                try {
+                    this.stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'user', width: { ideal: 1920 }, height: { ideal: 1080 } }
+                    });
+                    video.srcObject = this.stream;
+                    video.style.transform = 'scaleX(-1)';
+                } catch (err2) {
+                    showToast('No se pudo acceder a la camara. Verifica los permisos.', 'error');
+                }
+            } else {
+                showToast('No se pudo acceder a la camara. Verifica los permisos.', 'error');
+            }
         }
     },
 
@@ -851,7 +884,7 @@ const Profile = {
                     this.riddleToken = data.riddle_token;
                     document.getElementById('riddle-challenge').style.display = 'none';
                     document.getElementById('profile-gallery-container').style.display = 'block';
-                    showToast('¡Acertijo resuelto! 🎉');
+                    showToast('¡Acertijo resuelto!');
                     await this.loadPhotos(this.currentUsername, this.riddleToken);
                 } else {
                     errorEl.textContent = data.error || 'Respuesta incorrecta.';
@@ -1009,7 +1042,7 @@ const Explore = {
                             <div class="user-card-name">@${user.username}</div>
                             <div class="user-card-meta">
                                 <span>${user.total_fotos} foto${user.total_fotos != 1 ? 's' : ''}</span>
-                                ${user.acertijo_activo ? '<span class="user-card-badge">🧠 Acertijo</span>' : ''}
+                                ${user.acertijo_activo ? '<span class="user-card-badge">Acertijo</span>' : ''}
                             </div>
                         </div>
                         <div class="user-card-arrow">
