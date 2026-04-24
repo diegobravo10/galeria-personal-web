@@ -1,8 +1,8 @@
-# 🖼️ Galería Social — Acertijos para Desbloquear
+# Galería Social — Acertijos para Desbloquear
 
 Una plataforma social minimalista donde cada usuario tiene su propia galería de imágenes, protegida opcionalmente por un acertijo que otros deben resolver para ver sus fotos.
 
-## ✨ Características
+## Características
 
 - **Autenticación de usuarios** — Registro e inicio de sesión con JWT
 - **Galería personal** — Cada usuario tiene su propia galería de imágenes
@@ -13,7 +13,7 @@ Una plataforma social minimalista donde cada usuario tiene su propia galería de
 - **Diseño VSCO** — Interfaz minimalista, oscura y elegante
 - **Responsive** — Funciona en móviles y escritorio
 
-## 🛠️ Stack Tecnológico
+## Stack Tecnológico
 
 | Componente | Tecnología |
 |---|---|
@@ -26,7 +26,7 @@ Una plataforma social minimalista donde cada usuario tiene su propia galería de
 
 ---
 
-## 🚀 Inicio Rápido con Docker
+## Inicio Rápido con Docker
 
 ### Requisitos
 - Docker y Docker Compose instalados
@@ -58,7 +58,7 @@ docker-compose down
 
 ---
 
-## 💻 Ejecución Local (sin Docker)
+## Ejecución Local (sin Docker)
 
 ### Requisitos
 - Node.js 18+
@@ -102,7 +102,7 @@ Visita `http://localhost:3000`
 
 ---
 
-## 📦 API Endpoints
+## API Endpoints
 
 ### Autenticación
 | Método | Ruta | Descripción |
@@ -132,7 +132,7 @@ Visita `http://localhost:3000`
 
 ---
 
-## 🗄️ Modelo de Datos
+## Modelo de Datos
 
 ### Usuarios
 | Campo | Tipo | Descripción |
@@ -157,7 +157,7 @@ Visita `http://localhost:3000`
 
 ---
 
-## 🎨 Flujo de Uso
+## Flujo de Uso
 
 1. **Regístrate** — Crea tu cuenta con usuario y contraseña
 2. **Sube fotos** — Desde el menú o directamente con la cámara
@@ -167,7 +167,7 @@ Visita `http://localhost:3000`
 
 ---
 
-## 🌐 Despliegue en Producción (Ubuntu)
+## Despliegue en Producción (Ubuntu)
 
 ### 1. Instalar dependencias del sistema
 ```bash
