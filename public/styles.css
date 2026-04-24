@@ -1211,7 +1211,7 @@ input {
     position: absolute;
     top: 1rem;
     right: 1rem;
-    z-index: 510;
+    z-index: 520;
     width: 44px;
     height: 44px;
     display: flex;
@@ -1227,16 +1227,77 @@ input {
     color: white;
 }
 
+/* Navigation arrows */
+.lightbox-nav {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    z-index: 515;
+    width: 48px;
+    height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-full);
+    color: rgba(255, 255, 255, 0.6);
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+    transition: all var(--transition-fast);
+    cursor: pointer;
+}
+
+.lightbox-nav:hover {
+    background: rgba(255, 255, 255, 0.18);
+    color: white;
+    transform: translateY(-50%) scale(1.08);
+}
+
+.lightbox-nav:active {
+    transform: translateY(-50%) scale(0.95);
+}
+
+.lightbox-prev {
+    left: 1rem;
+}
+
+.lightbox-next {
+    right: 1rem;
+}
+
+/* Content wrapper for swipe */
+.lightbox-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex: 1;
+    width: 100%;
+    overflow: hidden;
+    touch-action: pan-y;
+}
+
 .lightbox-img {
     max-width: 95%;
     max-height: 80vh;
     object-fit: contain;
     border-radius: var(--radius-sm);
+    user-select: none;
+    -webkit-user-drag: none;
+    will-change: transform, opacity;
+}
+
+/* Bottom bar with info + counter */
+.lightbox-bottom {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    padding-bottom: env(safe-area-inset-bottom, 0);
 }
 
 .lightbox-info {
     text-align: center;
-    padding: 1.5rem;
+    padding: 1rem 1.5rem 0.25rem;
     max-width: 500px;
 }
 
@@ -1249,6 +1310,21 @@ input {
 .lightbox-date {
     font-size: 0.8rem;
     color: rgba(255, 255, 255, 0.4);
+}
+
+.lightbox-counter {
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.4);
+    letter-spacing: 1.5px;
+    padding: 0.5rem 1rem 1rem;
+    font-variant-numeric: tabular-nums;
+}
+
+/* On mobile hide arrows (swipe only) */
+@media (max-width: 768px) {
+    .lightbox-nav {
+        display: none !important;
+    }
 }
 
 /* ═══════════════════════════════════════════════════

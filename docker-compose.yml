@@ -11,9 +11,9 @@ services:
       - DB_USER=galeria_user
       - DB_HOST=db
       - DB_NAME=galeria_db
-      - DB_PASSWORD=galeria_password_segura
+      - DB_PASSWORD=diego2005
       - DB_PORT=5432
-      - JWT_SECRET=jwt_secreto_cambiar_en_produccion
+      - JWT_SECRET=diego2005
     depends_on:
       db:
         condition: service_healthy
@@ -27,7 +27,7 @@ services:
     restart: always
     environment:
       - POSTGRES_USER=galeria_user
-      - POSTGRES_PASSWORD=galeria_password_segura
+      - POSTGRES_PASSWORD=diego2005
       - POSTGRES_DB=galeria_db
     ports:
       - "5432:5432"

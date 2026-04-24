@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="description" content="Galería social minimalista con acertijos para desbloquear contenido. Comparte fotos y protege tu galería.">
-    <title>Galería Social</title>
+    <title>Kamerú</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -20,7 +20,7 @@
             <div class="auth-container">
                 <div class="auth-brand">
                     <div class="brand-icon">◈</div>
-                    <h1 class="brand-title">Galería</h1>
+                    <h1 class="brand-title">KAMERÚ</h1>
                     <p class="brand-subtitle">Comparte tu mundo visual</p>
                 </div>
                 <form id="loginForm" class="auth-form" autocomplete="off">
@@ -354,10 +354,21 @@
             <button class="lightbox-close" id="lightbox-close">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
             </button>
-            <img id="lightbox-img" class="lightbox-img">
-            <div class="lightbox-info" id="lightbox-info">
-                <p class="lightbox-desc" id="lightbox-desc"></p>
-                <p class="lightbox-date" id="lightbox-date"></p>
+            <button class="lightbox-nav lightbox-prev" id="lightbox-prev" title="Anterior">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+            </button>
+            <button class="lightbox-nav lightbox-next" id="lightbox-next" title="Siguiente">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+            </button>
+            <div class="lightbox-content" id="lightbox-content">
+                <img id="lightbox-img" class="lightbox-img">
+            </div>
+            <div class="lightbox-bottom">
+                <div class="lightbox-info" id="lightbox-info">
+                    <p class="lightbox-desc" id="lightbox-desc"></p>
+                    <p class="lightbox-date" id="lightbox-date"></p>
+                </div>
+                <div class="lightbox-counter" id="lightbox-counter"></div>
             </div>
         </div>
 

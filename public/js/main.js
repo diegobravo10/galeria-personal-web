@@ -381,6 +381,9 @@ const Dashboard = {
             return;
         }
 
+        // Set photos array for lightbox navigation
+        Lightbox.setPhotos(this.photos);
+
         this.photos.forEach((foto, index) => {
             const item = document.createElement('div');
             item.className = 'gallery-item fade-in';
@@ -405,7 +408,7 @@ const Dashboard = {
                 if (this.selectionMode) {
                     this.toggleSelection(foto.id, item);
                 } else {
-                    Lightbox.open(foto.ruta, foto.descripcion, foto.fecha);
+                    Lightbox.open(foto.ruta, foto.descripcion, foto.fecha, index);
                 }
             });
 
@@ -885,6 +888,9 @@ const Profile = {
                     return;
                 }
 
+                // Set photos array for lightbox navigation
+                Lightbox.setPhotos(data.fotos);
+
                 data.fotos.forEach((foto, index) => {
                     const item = document.createElement('div');
                     item.className = 'gallery-item fade-in';
@@ -894,7 +900,7 @@ const Profile = {
                         ${foto.descripcion ? `<div class="item-overlay"><span class="item-desc">${foto.descripcion}</span></div>` : ''}
                     `;
                     item.addEventListener('click', () => {
-                        Lightbox.open(foto.ruta, foto.descripcion, foto.fecha);
+                        Lightbox.open(foto.ruta, foto.descripcion, foto.fecha, index);
                     });
                     grid.appendChild(item);
                 });
@@ -1103,33 +1109,187 @@ const Explore = {
     }
 };
 
-// ────────────────────── LIGHTBOX ──────────────────────
-
 const Lightbox = {
+    photos: [],
+    currentIndex: 0,
+    touchStartX: 0,
+    touchStartY: 0,
+    touchDeltaX: 0,
+    isSwiping: false,
+
     init() {
+        const lightbox = document.getElementById('lightbox');
+        const content = document.getElementById('lightbox-content');
+
         document.getElementById('lightbox-close').addEventListener('click', () => this.close());
-        document.getElementById('lightbox').addEventListener('click', (e) => {
-            if (e.target.id === 'lightbox') this.close();
+        document.getElementById('lightbox-prev').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.prev();
+        });
+        document.getElementById('lightbox-next').addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.next();
         });
 
-        // ESC to close
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') this.close();
+        // Close on background click (not on image or controls)
+        lightbox.addEventListener('click', (e) => {
+            if (e.target === lightbox) this.close();
         });
+
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (lightbox.style.display === 'none') return;
+            switch (e.key) {
+                case 'Escape': this.close(); break;
+                case 'ArrowLeft': this.prev(); break;
+                case 'ArrowRight': this.next(); break;
+            }
+        });
+
+        // Touch/swipe support
+        content.addEventListener('touchstart', (e) => {
+            this.touchStartX = e.touches[0].clientX;
+            this.touchStartY = e.touches[0].clientY;
+            this.touchDeltaX = 0;
+            this.isSwiping = false;
+        }, { passive: true });
+
+        content.addEventListener('touchmove', (e) => {
+            const deltaX = e.touches[0].clientX - this.touchStartX;
+            const deltaY = e.touches[0].clientY - this.touchStartY;
+
+            // Only start swiping if horizontal movement exceeds vertical
+            if (!this.isSwiping && Math.abs(deltaX) > 10) {
+                if (Math.abs(deltaX) > Math.abs(deltaY)) {
+                    this.isSwiping = true;
+                }
+            }
+
+            if (this.isSwiping) {
+                e.preventDefault();
+                this.touchDeltaX = deltaX;
+                const img = document.getElementById('lightbox-img');
+                const clamp = Math.max(-120, Math.min(120, deltaX));
+                img.style.transform = `translateX(${clamp}px)`;
+                img.style.opacity = 1 - Math.abs(clamp) / 400;
+            }
+        }, { passive: false });
+
+        content.addEventListener('touchend', () => {
+            const img = document.getElementById('lightbox-img');
+            const threshold = 50;
+
+            if (this.isSwiping) {
+                if (this.touchDeltaX < -threshold && this.currentIndex < this.photos.length - 1) {
+                    this.animateSwipe('left', () => this.next());
+                    return;
+                } else if (this.touchDeltaX > threshold && this.currentIndex > 0) {
+                    this.animateSwipe('right', () => this.prev());
+                    return;
+                }
+            }
+
+            // Snap back
+            img.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+            img.style.transform = 'translateX(0)';
+            img.style.opacity = '1';
+            setTimeout(() => {
+                img.style.transition = '';
+            }, 260);
+        }, { passive: true });
     },
 
-    open(src, desc, fecha) {
-        const lightbox = document.getElementById('lightbox');
-        document.getElementById('lightbox-img').src = src;
-        document.getElementById('lightbox-desc').textContent = desc || '';
-        document.getElementById('lightbox-date').textContent = fecha
-            ? new Date(fecha).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })
-            : '';
-        lightbox.style.display = 'flex';
+    animateSwipe(direction, callback) {
+        const img = document.getElementById('lightbox-img');
+        const offset = direction === 'left' ? '-100%' : '100%';
+        img.style.transition = 'transform 0.25s ease, opacity 0.25s ease';
+        img.style.transform = `translateX(${offset})`;
+        img.style.opacity = '0';
+        setTimeout(() => {
+            img.style.transition = '';
+            callback();
+        }, 250);
+    },
+
+    setPhotos(photos) {
+        this.photos = photos;
+    },
+
+    open(src, desc, fecha, index) {
+        if (typeof index === 'number') {
+            this.currentIndex = index;
+        }
+        this.showCurrent();
+        document.getElementById('lightbox').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     },
 
+    showCurrent() {
+        const foto = this.photos[this.currentIndex];
+        if (!foto) return;
+
+        const img = document.getElementById('lightbox-img');
+        // Reset any swipe transforms
+        img.style.transition = '';
+        img.style.transform = 'translateX(0)';
+        img.style.opacity = '0';
+
+        // Fade in the new image
+        img.src = foto.ruta || foto.src;
+        img.onload = () => {
+            img.style.transition = 'opacity 0.2s ease';
+            img.style.opacity = '1';
+            setTimeout(() => { img.style.transition = ''; }, 220);
+        };
+        // Fallback if image is cached
+        if (img.complete) {
+            setTimeout(() => {
+                img.style.transition = 'opacity 0.2s ease';
+                img.style.opacity = '1';
+                setTimeout(() => { img.style.transition = ''; }, 220);
+            }, 10);
+        }
+
+        document.getElementById('lightbox-desc').textContent = foto.descripcion || foto.desc || '';
+        document.getElementById('lightbox-date').textContent = (foto.fecha || foto.date)
+            ? new Date(foto.fecha || foto.date).toLocaleDateString('es-ES', { day: '2-digit', month: 'long', year: 'numeric' })
+            : '';
+
+        // Update counter
+        const counter = document.getElementById('lightbox-counter');
+        if (this.photos.length > 1) {
+            counter.textContent = `${this.currentIndex + 1} / ${this.photos.length}`;
+            counter.style.display = 'block';
+        } else {
+            counter.style.display = 'none';
+        }
+
+        // Update nav button visibility
+        const prevBtn = document.getElementById('lightbox-prev');
+        const nextBtn = document.getElementById('lightbox-next');
+        prevBtn.style.display = this.currentIndex > 0 ? 'flex' : 'none';
+        nextBtn.style.display = this.currentIndex < this.photos.length - 1 ? 'flex' : 'none';
+    },
+
+    prev() {
+        if (this.currentIndex > 0) {
+            this.currentIndex--;
+            this.showCurrent();
+        }
+    },
+
+    next() {
+        if (this.currentIndex < this.photos.length - 1) {
+            this.currentIndex++;
+            this.showCurrent();
+        }
+    },
+
     close() {
+        const img = document.getElementById('lightbox-img');
+        img.style.transform = '';
+        img.style.opacity = '';
+        img.style.transition = '';
         document.getElementById('lightbox').style.display = 'none';
         document.body.style.overflow = '';
     }
